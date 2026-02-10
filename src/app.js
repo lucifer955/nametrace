@@ -17,6 +17,55 @@ const BASE_SUGGESTIONS = [
 	(name) => `${name}x`,
 ];
 
+const SERVICES = [
+	{
+		key: "crates",
+		label: "crates.io",
+		check: checkCrates,
+	},
+	{
+		key: "github",
+		label: "GitHub",
+		check: checkGitHub,
+		formatDetails: buildGitHubDetails,
+	},
+	{
+		key: "homebrew",
+		label: "Homebrew",
+		check: checkHomebrew,
+	},
+	{
+		key: "npm",
+		label: "npm",
+		check: checkNpm,
+	},
+	{
+		key: "nuget",
+		label: "NuGet",
+		check: checkNuGet,
+	},
+	{
+		key: "powershell",
+		label: "PowerShell Gallery",
+		check: checkPowerShellGallery,
+	},
+	{
+		key: "pypi",
+		label: "PyPI",
+		check: checkPyPi,
+	},
+	{
+		key: "rubygems",
+		label: "RubyGems",
+		check: checkRubyGems,
+	},
+	{
+		key: "maven",
+		label: "Maven Central",
+		check: checkMavenCentral,
+	},
+];
+
 checkButton.addEventListener("click", () => {
 	handleCheck();
 });
@@ -39,6 +88,21 @@ if (document?.title) {
 	document.title = APP_NAME;
 }
 
+function getEnabledServiceKeys() {
+	const inputs = Array.from(
+		document.querySelectorAll('input[name="serviceFilter"]'),
+	);
+	const enabled = inputs
+		.filter((input) => input.checked)
+		.map((input) => input.value);
+	return new Set(enabled);
+}
+
+function getEnabledServices() {
+	const enabled = getEnabledServiceKeys();
+	return SERVICES.filter((service) => enabled.has(service.key));
+}
+
 function normalizeName(value) {
 	return value.trim().toLowerCase();
 }
@@ -48,31 +112,39 @@ function setLoading(isLoading) {
 	checkButton.textContent = isLoading ? "Checking..." : "Check";
 }
 
-function clearOutput() {
-	const checks = {
-		crates: { status: "unknown", details: "Checking..." },
-		github: {
-			status: "unknown",
-			details: "Checking...",
-			count: 0,
-			examples: [],
-			exact: false,
-		},
-		homebrew: {
-			status: "unknown",
-			details: "Checking...",
-			note: "best-effort",
-		},
-		npm: { status: "unknown", details: "Checking..." },
-		nuget: { status: "unknown", details: "Checking..." },
-		powershell: { status: "unknown", details: "Checking..." },
-		pypi: { status: "unknown", details: "Checking..." },
-		rubygems: { status: "unknown", details: "Checking..." },
-		maven: { status: "unknown", details: "Checking..." },
-	};
+function clearOutput(enabledServices) {
+	const checks = {};
+	for (const service of enabledServices) {
+		if (service.key === "github") {
+			checks[service.key] = {
+				status: "unknown",
+				details: "Checking...",
+				count: 0,
+				examples: [],
+				exact: false,
+			};
+			continue;
+		}
+		if (service.key === "homebrew") {
+			checks[service.key] = {
+				status: "unknown",
+				details: "Checking...",
+				note: "best-effort",
+			};
+			continue;
+		}
+		checks[service.key] = { status: "unknown", details: "Checking..." };
+	}
 
-	renderTable(checks);
-	riskSummary.innerHTML = `<p class="muted">Waiting for crates.io and GitHub...</p>`;
+	renderTable(checks, enabledServices);
+	if (
+		enabledServices.some((service) => service.key === "crates") &&
+		enabledServices.some((service) => service.key === "github")
+	) {
+		riskSummary.innerHTML = `<p class="muted">Waiting for crates.io and GitHub...</p>`;
+	} else {
+		riskSummary.innerHTML = `<p class="muted">Enable crates.io and GitHub to see risk summary.</p>`;
+	}
 	suggestionsList.innerHTML = `<li class="muted">Waiting for risk summary...</li>`;
 	return checks;
 }
@@ -87,25 +159,25 @@ async function handleCheck() {
 	}
 
 	setLoading(true);
-	const checks = clearOutput();
+	const enabledServices = getEnabledServices();
+	if (enabledServices.length === 0) {
+		riskSummary.innerHTML = `<p class="muted">Select at least one service to run checks.</p>`;
+		suggestionsList.innerHTML = `<li class="muted">No services selected.</li>`;
+		resultsBody.innerHTML = `
+      <tr>
+        <td colspan="3" class="empty">Select services to run checks.</td>
+      </tr>
+    `;
+		setLoading(false);
+		return;
+	}
+	const checks = clearOutput(enabledServices);
 	let riskReady = false;
 
-	const tasks = [
-		{ key: "crates", fn: checkCrates },
-		{ key: "github", fn: checkGitHub },
-		{ key: "homebrew", fn: checkHomebrew },
-		{ key: "npm", fn: checkNpm },
-		{ key: "nuget", fn: checkNuGet },
-		{ key: "powershell", fn: checkPowerShellGallery },
-		{ key: "pypi", fn: checkPyPi },
-		{ key: "rubygems", fn: checkRubyGems },
-		{ key: "maven", fn: checkMavenCentral },
-	];
-
-	const pending = tasks.map(({ key, fn }) =>
-		fn(name).then((result) => {
-			checks[key] = result;
-			renderTable(checks);
+	const pending = enabledServices.map((service) =>
+		service.check(name).then((result) => {
+			checks[service.key] = result;
+			renderTable(checks, enabledServices);
 
 			if (!riskReady && checks.crates && checks.github) {
 				const resultData = buildResult(
@@ -781,30 +853,25 @@ function calculateRiskLevel(cratesResult, githubResult) {
 	return "low";
 }
 
-function renderResults(result) {
-	renderTable(result.checks);
+function renderResults(result, enabledServices = SERVICES) {
+	renderTable(result.checks, enabledServices);
 	renderRisk(result);
 	renderSuggestions(result);
 }
 
-function renderTable(checks) {
-	const rows = [
-		buildRow("crates.io", checks.crates.status, checks.crates.details),
-		buildRow("GitHub", checks.github.status, buildGitHubDetails(checks.github)),
-		buildRow("Homebrew", checks.homebrew.status, checks.homebrew.details),
-		buildRow("npm", checks.npm.status, checks.npm.details),
-		buildRow("NuGet", checks.nuget.status, checks.nuget.details),
-		buildRow(
-			"PowerShell Gallery",
-			checks.powershell.status,
-			checks.powershell.details,
-		),
-		buildRow("PyPI", checks.pypi.status, checks.pypi.details),
-		buildRow("RubyGems", checks.rubygems.status, checks.rubygems.details),
-		buildRow("Maven Central", checks.maven.status, checks.maven.details),
-	];
+function renderTable(checks, enabledServices = SERVICES) {
+	const rows = enabledServices.map((service) => {
+		const result = checks[service.key];
+		if (!result) {
+			return "";
+		}
+		const details = service.formatDetails
+			? service.formatDetails(result)
+			: result.details;
+		return buildRow(service.label, result.status, details);
+	});
 
-	resultsBody.innerHTML = rows.join("");
+	resultsBody.innerHTML = rows.filter(Boolean).join("");
 }
 
 function buildGitHubDetails(github) {

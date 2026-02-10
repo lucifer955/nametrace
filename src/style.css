@@ -86,6 +86,20 @@ body {
 	gap: 8px;
 }
 
+.service-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	cursor: pointer;
+}
+
+.service-toggle input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	accent-color: var(--accent);
+}
+
 .service-icon {
 	font-size: 1.1rem;
 }

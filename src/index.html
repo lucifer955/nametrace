@@ -25,6 +25,107 @@
 				</p>
 			</header>
 
+			<section class="services">
+				<h2>Service filters</h2>
+				<p class="muted">Toggle which registries to include in checks.</p>
+				<ul class="services-list">
+					<li>
+						<label class="service-toggle">
+							<input
+								type="checkbox"
+								name="serviceFilter"
+								value="crates"
+								checked
+							/>
+							<span class="service-icon">🦀</span>crates.io
+						</label>
+					</li>
+					<li>
+						<label class="service-toggle">
+							<input
+								type="checkbox"
+								name="serviceFilter"
+								value="github"
+								checked
+							/>
+							<span class="service-icon">🐙</span>GitHub
+						</label>
+					</li>
+					<li>
+						<label class="service-toggle">
+							<input
+								type="checkbox"
+								name="serviceFilter"
+								value="homebrew"
+								checked
+							/>
+							<span class="service-icon">🍺</span>Homebrew
+						</label>
+					</li>
+					<li>
+						<label class="service-toggle">
+							<input type="checkbox" name="serviceFilter" value="npm" checked />
+							<span class="service-icon">📦</span>npm
+						</label>
+					</li>
+					<li>
+						<label class="service-toggle">
+							<input
+								type="checkbox"
+								name="serviceFilter"
+								value="nuget"
+								checked
+							/>
+							<span class="service-icon">🧩</span>NuGet
+						</label>
+					</li>
+					<li>
+						<label class="service-toggle">
+							<input
+								type="checkbox"
+								name="serviceFilter"
+								value="powershell"
+								checked
+							/>
+							<span class="service-icon">💻</span>PowerShell Gallery
+						</label>
+					</li>
+					<li>
+						<label class="service-toggle">
+							<input
+								type="checkbox"
+								name="serviceFilter"
+								value="pypi"
+								checked
+							/>
+							<span class="service-icon">🐍</span>PyPI
+						</label>
+					</li>
+					<li>
+						<label class="service-toggle">
+							<input
+								type="checkbox"
+								name="serviceFilter"
+								value="rubygems"
+								checked
+							/>
+							<span class="service-icon">💎</span>RubyGems
+						</label>
+					</li>
+					<li>
+						<label class="service-toggle">
+							<input
+								type="checkbox"
+								name="serviceFilter"
+								value="maven"
+								checked
+							/>
+							<span class="service-icon">☕</span>Maven Central
+						</label>
+					</li>
+				</ul>
+			</section>
+
 			<section class="checker">
 				<label for="nameInput" class="input-label">Project name</label>
 				<div class="input-row">
@@ -69,21 +170,6 @@
 				<h2>Suggested alternatives</h2>
 				<ul id="suggestionsList" class="suggestions-list">
 					<li class="muted">Suggestions appear when risk is medium or high.</li>
-				</ul>
-			</section>
-
-			<section class="services">
-				<h2>Services checked</h2>
-				<ul class="services-list">
-					<li><span class="service-icon">🦀</span>crates.io</li>
-					<li><span class="service-icon">🐙</span>GitHub</li>
-					<li><span class="service-icon">🍺</span>Homebrew</li>
-					<li><span class="service-icon">📦</span>npm</li>
-					<li><span class="service-icon">🧩</span>NuGet</li>
-					<li><span class="service-icon">💻</span>PowerShell Gallery</li>
-					<li><span class="service-icon">🐍</span>PyPI</li>
-					<li><span class="service-icon">💎</span>RubyGems</li>
-					<li><span class="service-icon">☕</span>Maven Central</li>
 				</ul>
 			</section>
 
