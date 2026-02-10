@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>nametrace</title>
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="stylesheet" href="style.css" />
+		<script defer src="app.js"></script>
+	</head>
+	<body>
+		<main class="container">
+			<header class="page-header">
+				<div class="title-row">
+					<h1 id="appName">nametrace</h1>
+					<span id="appVersion" class="version-badge">v0.1.0</span>
+				</div>
+				<p class="subtitle">
+					Check a project name across major registries to avoid collisions
+					before you publish.
+				</p>
+				<p class="subtitle">
+					Results stream as they arrive, with a clear risk summary and
+					suggestions when needed.
+				</p>
+			</header>
+
+			<section class="checker">
+				<label for="nameInput" class="input-label">Project name</label>
+				<div class="input-row">
+					<input
+						id="nameInput"
+						name="name"
+						type="text"
+						placeholder="e.g. worklog"
+						autocomplete="off"
+					/>
+					<button id="checkButton" type="button">Check</button>
+				</div>
+				<p id="inputError" class="input-error" role="alert"></p>
+			</section>
+
+			<section class="results" aria-live="polite">
+				<h2>Results</h2>
+				<table class="results-table">
+					<thead>
+						<tr>
+							<th>Ecosystem</th>
+							<th>Status</th>
+							<th>Details</th>
+						</tr>
+					</thead>
+					<tbody id="resultsBody">
+						<tr>
+							<td colspan="3" class="empty">Run a check to see results.</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section class="risk">
+				<h2>Risk summary</h2>
+				<div id="riskSummary" class="risk-summary">
+					<p class="muted">No data yet.</p>
+				</div>
+			</section>
+
+			<section class="suggestions">
+				<h2>Suggested alternatives</h2>
+				<ul id="suggestionsList" class="suggestions-list">
+					<li class="muted">Suggestions appear when risk is medium or high.</li>
+				</ul>
+			</section>
+
+			<section class="services">
+				<h2>Services checked</h2>
+				<ul class="services-list">
+					<li><span class="service-icon">🦀</span>crates.io</li>
+					<li><span class="service-icon">🐙</span>GitHub</li>
+					<li><span class="service-icon">🍺</span>Homebrew</li>
+					<li><span class="service-icon">📦</span>npm</li>
+					<li><span class="service-icon">🧩</span>NuGet</li>
+					<li><span class="service-icon">💻</span>PowerShell Gallery</li>
+					<li><span class="service-icon">🐍</span>PyPI</li>
+					<li><span class="service-icon">💎</span>RubyGems</li>
+					<li><span class="service-icon">☕</span>Maven Central</li>
+				</ul>
+			</section>
+
+			<section class="disclaimer">
+				<p>
+					Results are best-effort. Availability may change at any time. This
+					tool does not guarantee name ownership.
+				</p>
+			</section>
+		</main>
+	</body>
+</html>
