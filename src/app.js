@@ -8,6 +8,8 @@ const riskSummary = document.getElementById("riskSummary");
 const suggestionsList = document.getElementById("suggestionsList");
 const appVersion = document.getElementById("appVersion");
 const appName = document.getElementById("appName");
+const themeToggle = document.getElementById("themeToggle");
+const themeToggleIcon = document.getElementById("themeToggleIcon");
 
 const BASE_SUGGESTIONS = [
 	(name) => `${name}-rs`,
@@ -86,6 +88,48 @@ if (appName) {
 
 if (document?.title) {
 	document.title = APP_NAME;
+}
+
+const THEME_STORAGE_KEY = "nametrace-theme";
+
+function applyTheme(theme) {
+	if (!document?.body) {
+		return;
+	}
+	document.body.dataset.theme = theme;
+	if (themeToggleIcon) {
+		themeToggleIcon.textContent = theme === "dark" ? "☀️" : "🌙";
+	}
+	if (themeToggle) {
+		themeToggle.setAttribute(
+			"aria-label",
+			theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
+		);
+		themeToggle.title =
+			theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+	}
+}
+
+function getInitialTheme() {
+	const stored = localStorage.getItem(THEME_STORAGE_KEY);
+	if (stored === "light" || stored === "dark") {
+		return stored;
+	}
+	if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+		return "dark";
+	}
+	return "light";
+}
+
+const initialTheme = getInitialTheme();
+applyTheme(initialTheme);
+
+if (themeToggle) {
+	themeToggle.addEventListener("click", () => {
+		const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
+		applyTheme(nextTheme);
+		localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+	});
 }
 
 function getEnabledServiceKeys() {

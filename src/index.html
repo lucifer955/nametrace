@@ -10,6 +10,17 @@
 	</head>
 	<body>
 		<main class="container">
+			<div class="theme-toggle-bar">
+				<button
+					id="themeToggle"
+					type="button"
+					class="theme-toggle"
+					aria-label="Toggle dark mode"
+					title="Toggle dark mode"
+				>
+					<span id="themeToggleIcon" aria-hidden="true">🌙</span>
+				</button>
+			</div>
 			<header class="page-header">
 				<div class="title-row">
 					<h1 id="appName">nametrace</h1>
@@ -87,7 +98,8 @@
 								value="powershell"
 								checked
 							/>
-							<span class="service-icon">💻</span>PowerShell Gallery
+							<span class="service-icon">💻</span>
+							<span class="service-name">PowerShell Gallery</span>
 						</label>
 					</li>
 					<li>
